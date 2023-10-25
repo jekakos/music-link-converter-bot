@@ -1,0 +1,12 @@
+{
+  "scenes": {
+    "start": {
+      "welcome_message": "let's start! Paste or forward here link to music and get a link to your favourite player."
+    }
+  },
+  "choose_platform": "Choose streaming platform:",
+  "platform_not_found": "Unsupported link",
+  "wrong_madia_type": "Unsupported media type",
+  "cannot_find_link": "Cannot find track on this platform :("
+
+}
