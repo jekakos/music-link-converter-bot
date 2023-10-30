@@ -65,9 +65,13 @@ class Bot implements IBot {
       );
     });
 
-    // Send message with link
+    // Send message with link or song name
     this.bot.on('message', async (ctx: ICtxUpd) => {
-      if ('text' in ctx.message! && ctx.message.text.startsWith('https://')) {
+      if (!('text' in ctx.message!)) throw Error('Empty message');
+
+      // --------------------------------------------------------
+      // Converted platforms
+      if (ctx.message.text.startsWith('https://')) {
         const messageLink = ctx.message.text;
 
         console.log('Message: ', messageLink);
@@ -91,7 +95,7 @@ class Bot implements IBot {
         // Create keyboard
         let platformList;
         try {
-          platformList = ctx.linkService.getPlatformList(messageLink);
+          platformList = ctx.linkService.getPlatformListByLink(messageLink);
         } catch (error) {
           throw error;
         }
@@ -111,23 +115,59 @@ class Bot implements IBot {
             link: messageLink,
           };
 
-          buttons.push(
+          buttons.push([
             Markup.button.callback(
               `${platformList[platform].title}`,
               'get_link|' + key,
             ),
-          );
+          ]);
         }
 
         const keyboard = Markup.inlineKeyboard(buttons);
-
-        // Отправка клавиатуры пользователю
         ctx.replyWithHTML(ctx.i18n.t('choose_platform'), keyboard);
-      } else {
-        ctx.reply(ctx.i18n.t('link_not_found'));
+        return;
       }
+
+      // --------------------------------------------------------
+      // Search by track info
+      const trackInfo = ctx.linkService.extractTrackInfo(ctx.message.text);
+
+      if (trackInfo) {
+        const platformList = ctx.linkService.getPlatformListAll();
+        const buttons = [];
+        if (!this.qSession[ctx.botUser.id]) {
+          this.qSession[ctx.botUser.id] = {};
+        }
+
+        for (const platform in platformList) {
+          const key = Math.random().toString(36).substring(6, 10);
+
+          this.qSession[ctx.botUser.id][key] = {
+            to_platform: platformList[platform].name,
+            track: {
+              artist: trackInfo.artist,
+              title: trackInfo.title,
+            },
+          };
+
+          buttons.push([
+            Markup.button.callback(
+              `${platformList[platform].title}`,
+              'get_track|' + key,
+            ),
+          ]);
+        }
+
+        const keyboard = Markup.inlineKeyboard(buttons);
+        ctx.replyWithHTML(ctx.i18n.t('choose_platform'), keyboard);
+
+        return;
+      }
+
+      ctx.reply(ctx.i18n.t('platform_not_found'));
     });
 
+    // --------------------------------------------------------
     // Action get_link
     this.bot.action(/get_link\|(.+)/, async (ctx: ICtxUpd) => {
       let key;
@@ -154,8 +194,36 @@ class Bot implements IBot {
         ctx.reply(ctx.i18n.t('cannot_find_link'));
         return;
       }
-      // Дальнейшая обработка ...
+      await ctx.reply(to_link as string);
+    });
 
+    // --------------------------------------------------------
+    // Action get_track
+    this.bot.action(/get_track\|(.+)/, async (ctx: ICtxUpd) => {
+      let key;
+      let keyData;
+
+      if ('match' in ctx) {
+        [, key] = ctx.match as RegExpExecArray;
+        keyData = this.qSession[ctx.botUser.id][key] ?? null;
+      } else {
+        throw Error('Wrong command 1');
+      }
+
+      if (!keyData) throw Error('Wrong command 2');
+
+      console.log('Track = ', keyData.track);
+
+      let to_link;
+      try {
+        to_link = await ctx.apiService.getLinkByTrack(
+          keyData.track,
+          keyData.to_platform,
+        );
+      } catch (error) {
+        ctx.reply(ctx.i18n.t('cannot_find_link'));
+        return;
+      }
       await ctx.reply(to_link as string);
     });
 

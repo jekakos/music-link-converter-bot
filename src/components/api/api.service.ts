@@ -37,6 +37,35 @@ class ApiService implements IApiService {
     }
     return response;
   }
+
+  async getLinkByTrack(
+    track: { artist: string; title: string },
+    to_platform: string,
+  ): Promise<string> {
+    logger.error('Going to get link by track from API');
+    const artist = encodeURIComponent(track.artist);
+    const title = encodeURIComponent(track.title);
+
+    let response;
+
+    try {
+      response = await this.http.get<JwtToken>(
+        '/search_track?artist=' +
+          artist +
+          '&title=' +
+          title +
+          '&to_platform=' +
+          to_platform,
+      );
+    } catch (error) {
+      throw handleApiErrors(error);
+    }
+
+    if (!response) {
+      throw new Error('Failed to get link from API');
+    }
+    return response;
+  }
 }
 
 export { ApiService };
