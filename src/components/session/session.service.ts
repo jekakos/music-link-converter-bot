@@ -1,5 +1,4 @@
 import { injectable } from 'inversify';
-//import RedisSessionContext from 'telegraf-session-redis';
 import { RedisOptions, Redis } from 'ioredis';
 import { ISessionService } from './session.interface.js';
 import { logger } from '../../utils/logger.js';
