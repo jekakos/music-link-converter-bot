@@ -21,6 +21,7 @@ export class RedisSessionService implements ISessionService {
       db: db,
     };
 
+    console.log('Connect to Rdis: ', redisOptions);
     this.redisClient = new Redis(redisOptions);
 
     return new Promise((resolve, reject) => {
