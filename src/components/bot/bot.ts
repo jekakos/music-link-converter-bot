@@ -12,6 +12,7 @@ import getSceneList from './bot.scenes.list.js';
 import { IUserService } from '../user/user.service.interface.js';
 import { LinkService } from '../links/links.service.js';
 import { IApiService } from '../api/api.service.interface.js';
+import { StatisticsService } from '../statistics/statistics.serivce.js';
 
 @injectable()
 class Bot implements IBot {
@@ -21,6 +22,7 @@ class Bot implements IBot {
   productionMode = false;
   userService: IUserService;
   qSession: any;
+  statistics: StatisticsService;
 
   constructor(
     @inject(TYPES.ConfigService) config: IConfigService,
@@ -28,6 +30,8 @@ class Bot implements IBot {
     @inject(TYPES.UserService) userService: IUserService,
     @inject(TYPES.LinkService) linkService: LinkService,
     @inject(TYPES.ApiService) apiService: IApiService,
+    @inject(TYPES.StatisticsService)
+    statistics: StatisticsService,
   ) {
     this.config = config;
     this.session = sessionService;
@@ -37,6 +41,7 @@ class Bot implements IBot {
     this.bot.context.linkService = linkService;
     this.userService = userService;
     this.qSession = {};
+    this.statistics = statistics;
   }
 
   async init() {
@@ -50,6 +55,8 @@ class Bot implements IBot {
     this.bot.use(i18n.middleware());
 
     this.bot.use(this.handleUpdate.bind(this));
+
+    this.bot.use(this.statistics.createMiddleware());
 
     const sceneList = await getSceneList();
     //logger.debug('Scenes List: ' + JSON.stringify(sceneList));

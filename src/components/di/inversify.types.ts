@@ -10,6 +10,7 @@ const TYPES = {
   SceneRouter: Symbol.for('SceneRouter'),
   TestNavigationService: Symbol.for('TestNavigationService'),
   LinkService: Symbol.for('LinkService'),
+  StatisticsService: Symbol.for('StatisticsService'),
 };
 
 export { TYPES };
