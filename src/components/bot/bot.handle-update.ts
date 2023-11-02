@@ -27,7 +27,7 @@ export async function handleUpdateCtx(
     session,
   );
 
-  console.log('Session from Redis:', session);
+  //console.log('Session from Redis:', session);
 
   const locale = session.language ?? 'en';
   ctx.i18n.locale(locale);
@@ -57,8 +57,8 @@ export async function handleUpdateCtx(
   logger.debug('------------ After action');
   if (ctx.sessionData) {
     logger.debug('Going to save');
-    console.log('Session NEW:', ctx.sessionData);
-    console.log('Session OLD:', session);
+    //console.log('Session NEW:', ctx.sessionData);
+    //console.log('Session OLD:', session);
     await bot.session.saveSession(telegram_id, ctx.sessionData, session);
   }
   console.log('End');

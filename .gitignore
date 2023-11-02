@@ -4,6 +4,10 @@
 sessions.json
 /*.log
 
+# Loks (temp?)
+package-lock.json
+yarn.lock
+
 # Logs
 logs
 *.log
