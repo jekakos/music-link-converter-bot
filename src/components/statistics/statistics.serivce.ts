@@ -39,8 +39,7 @@ export class StatisticsService {
     const url = `https://www.google-analytics.com/mp/collect?measurement_id=${this.GA4_MEASUREMENT_ID}&api_secret=${this.GA4_API_SECRET}`;
 
     try {
-      const response = await axios.post(url, payload);
-      console.log('Event sent to Google Analytics:', response.data);
+      await axios.post(url, payload);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(
@@ -51,17 +50,18 @@ export class StatisticsService {
         console.error('Error sending event to Google Analytics:', error);
       }
     }
+    console.log('Event sent to Google Analytics: ', payload);
   }
 
   createMiddleware(): MiddlewareFn<ICtxUpd> {
-    return (ctx, next) => {
+    return async (ctx, next) => {
       const user = BotUserService.getUser(ctx);
       const userId = String(user.id);
 
       let messageText = '';
       if (ctx.message && 'text' in ctx.message) messageText = ctx.message?.text;
 
-      this.sendEvent({
+      await this.sendEvent({
         userId: userId,
         name: 'message',
         params: {
@@ -69,7 +69,7 @@ export class StatisticsService {
         },
       });
 
-      return next();
+      return await next();
     };
   }
 }
