@@ -21,8 +21,8 @@ export class StatisticsService {
     this.sessionService = sessionService;
     this.configService = configService;
 
-    this.GA4_API_SECRET = ''; //this.configService.get('GA4_API_SECRET');
-    this.GA4_MEASUREMENT_ID = ''; //this.configService.get('GA4_MEASUREMENT_ID');
+    this.GA4_API_SECRET = this.configService.get('GA4_API_SECRET');
+    this.GA4_MEASUREMENT_ID = this.configService.get('GA4_MEASUREMENT_ID');
   }
 
   async sendEvent(event: any): Promise<void> {
