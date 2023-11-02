@@ -89,15 +89,16 @@ export class LinkService {
   }
 
   extractTrackInfo(text: string): { artist: string; title: string } | null {
-    // Удалить URL-адреса из текста
     text = text.replace(/https?:\/\/[^\s]+/g, '');
-    // Очистить текст от специальных символов
     text = text.replace(/[^\w\s-'`&]/g, '');
-    // Попробуйте найти совпадение с одним из двух форматов
     const regex1 = /(.+?) by (.+)/;
     const regex2 = /(.+?) - (.+)/;
     const match1 = text.match(regex1);
     const match2 = text.match(regex2);
+
+    //console.log('Match 1', match1);
+    //console.log('Match 2', match2);
+
     if (match1) {
       const [_, title, artist] = match1;
       return { title: title.trim(), artist: artist.trim() };
