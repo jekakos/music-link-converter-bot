@@ -112,7 +112,6 @@ class Bot implements IBot {
   private startProdMode(): void {
     logger.debug('Launching a bot in Prod mode');
     //TODO: add webHook
-    //this.bot.createWebhook(...)
   }
 
   private startDevMode(): void {
