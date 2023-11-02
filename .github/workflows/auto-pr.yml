@@ -18,4 +18,4 @@ jobs:
           destination_branch: 'main' # Ветка, в которую вы хотите сделать pull request
           github_token: ${{ secrets.GITHUB_TOKEN }} # подставляется автоматом
           pr_title: 'New changes from Develop' # Заголовок для pull request
-          pr_body: 'Please pull these awesome changes in!' # Содержание сообщения pull request
+          pr_body: 'Create Pull Request' # Содержание сообщения pull request
