@@ -54,20 +54,37 @@ export class StatisticsService {
   }
 
   createMiddleware(): MiddlewareFn<ICtxUpd> {
-    return async (ctx, next) => {
+    return async (ctx: ICtxUpd, next) => {
       const user = BotUserService.getUser(ctx);
       const userId = String(user.id);
 
       let messageText = '';
       if (ctx.message && 'text' in ctx.message) messageText = ctx.message?.text;
 
-      await this.sendEvent({
+      // without await to make it async
+      this.sendEvent({
         userId: userId,
         name: 'message',
         params: {
           text: messageText,
         },
       });
+
+      if (ctx.configService.isset('REPORTER_ID')) {
+        const reporter_id = ctx.configService.get('REPORTER_ID');
+        console.log('Trying to send message report');
+
+        // without await to make it async
+        ctx.telegram.sendMessage(
+          reporter_id,
+          'User: ' +
+            userId +
+            '(@' +
+            user.username +
+            '), message: ' +
+            messageText,
+        );
+      }
 
       return await next();
     };

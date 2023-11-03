@@ -89,22 +89,25 @@ export class LinkService {
   }
 
   extractTrackInfo(text: string): { artist: string; title: string } | null {
+    // Основные разделители
+    const delimiters = [' by ', ' - ', ' – ', '|', '•'];
+
+    // Проверяем наличие ссылки на Shazam и добавляем специальный разделитель, если нужно
+    if (text.includes('www.shazam.com')) {
+      delimiters.push(' от ');
+    }
+
     text = text.replace(/https?:\/\/[^\s]+/g, '');
-    text = text.replace(/[^\w\s-'`&]/g, '');
-    const regex1 = /(.+?) by (.+)/;
-    const regex2 = /(.+?) - (.+)/;
-    const match1 = text.match(regex1);
-    const match2 = text.match(regex2);
 
-    //console.log('Match 1', match1);
-    //console.log('Match 2', match2);
-
-    if (match1) {
-      const [_, title, artist] = match1;
-      return { title: title.trim(), artist: artist.trim() };
-    } else if (match2) {
-      const [_, title, artist] = match2;
-      return { title: title.trim(), artist: artist.trim() };
+    // Перебираем разделители и пытаемся найти соответствие
+    for (const delimiter of delimiters) {
+      const parts = text.split(delimiter);
+      if (parts.length === 2) {
+        const [artist, title] = parts.map((part) => part.trim());
+        if (artist && title) {
+          return { artist, title };
+        }
+      }
     }
     return null;
   }

@@ -47,6 +47,7 @@ class Bot implements IBot {
     this.bot.context.sessionService = sessionService;
     this.bot.context.apiService = apiService;
     this.bot.context.linkService = linkService;
+    this.bot.context.configService = config;
     this.userService = userService;
     this.qSession = {};
     this.statistics = statistics;
@@ -73,7 +74,8 @@ class Bot implements IBot {
     this.bot.use(stage.middleware());
 
     try {
-      await this.bot.telegram.sendMessage(
+      // without await for async
+      this.bot.telegram.sendMessage(
         parseInt(this.config.get('OWNER_ID')),
         'Bot successfully restarted!',
       );

@@ -23,6 +23,10 @@ class EnvConfigService implements IConfigService {
     return this.get('NODE_ENV') === 'production' ? true : false;
   }
 
+  isset(key: string): boolean {
+    return key in this.config && this.config[key] ? true : false;
+  }
+
   get(key: string): string {
     const res = this.config[key];
     if (!res) {
