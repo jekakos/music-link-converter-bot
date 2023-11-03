@@ -60,6 +60,7 @@ export class StatisticsService {
 
       let messageText = '';
       if (ctx.message && 'text' in ctx.message) messageText = ctx.message?.text;
+      if (!messageText) messageText = 'button click';
 
       // without await to make it async
       this.sendEvent({
