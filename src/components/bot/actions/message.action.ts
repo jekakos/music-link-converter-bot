@@ -19,7 +19,7 @@ export class MessageAction {
 
         console.log('Message: ', messageLink);
 
-        const from_platform = ctx.linkService.detectPlatform(messageLink);
+        const from_platform = ctx.linkService.detectSourcePlatform(messageLink);
         if (!from_platform) {
           ctx.reply(ctx.i18n.t('platform_not_found'));
           return;
@@ -27,7 +27,7 @@ export class MessageAction {
 
         const mediaType = ctx.linkService.detectMediaType(
           messageLink,
-          from_platform,
+          from_platform.name,
         );
 
         if (!mediaType || mediaType != 'track') {
@@ -43,7 +43,7 @@ export class MessageAction {
           throw error;
         }
 
-        console.log('Platforms: ', platformList);
+        //console.log('Platforms: ', platformList);
 
         const buttons = [];
         if (!this.qSession[ctx.botUser.id]) {

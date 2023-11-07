@@ -11,6 +11,14 @@ export type PlatformListType = {
   };
 };
 
+export type PlatformSourceListType = {
+  [platformName: string]: {
+    name: string;
+    title: string;
+    method: 'api' | 'header';
+  };
+};
+
 export type MediaType = 'track' | 'album';
 
 @injectable()
@@ -47,14 +55,45 @@ export class LinkService {
     },
   };
 
-  detectPlatform(link: string): string | null {
-    if (link.includes('spotify.com')) return this.platformList.Spotify.name;
+  private platformSourceList: PlatformSourceListType = {
+    Spotify: {
+      name: 'spotify',
+      title: 'Spotify',
+      method: 'api',
+    },
+    YandexMusic: {
+      name: 'yandex-music',
+      title: 'Yandex Music',
+      method: 'api',
+    },
+    YoutubeMusic: {
+      name: 'youtube-music',
+      title: 'YouTube Music',
+      method: 'api',
+    },
+    AppleMusic: {
+      name: 'apple-music',
+      title: 'Apple Music',
+      method: 'api',
+    },
+    YoutobeVideo: {
+      name: 'youtube-video',
+      title: 'YouTube Video',
+      method: 'header',
+    },
+  };
+
+  detectSourcePlatform(
+    link: string,
+  ): PlatformSourceListType[keyof PlatformSourceListType] | null {
+    if (link.includes('spotify.com')) return this.platformSourceList.Spotify;
     if (link.includes('music.yandex'))
-      return this.platformList.YandexMusic.name;
+      return this.platformSourceList.YandexMusic;
     if (link.includes('music.youtube'))
-      return this.platformList.YoutubeMusic.name;
+      return this.platformSourceList.YoutubeMusic;
     if (link.includes('music.apple.com'))
-      return this.platformList.AppleMusic.name;
+      return this.platformSourceList.AppleMusic;
+    if (link.includes('youtu.be')) return this.platformSourceList.YoutobeVideo;
 
     return null;
   }
@@ -81,6 +120,11 @@ export class LinkService {
       case 'apple-music':
         {
           if (link.includes('?i=')) return 'track';
+        }
+        break;
+      case 'youtube-video':
+        {
+          if (link.includes('?si=')) return 'track';
         }
         break;
     }
@@ -117,13 +161,13 @@ export class LinkService {
   }
 
   getPlatformListByLink(link: string): PlatformListType {
-    const from_platform = this.detectPlatform(link);
+    const from_platform = this.detectSourcePlatform(link);
     if (!from_platform) throw Error('Wrong link');
 
     const toPlatformList: PlatformListType = {};
 
     for (const platform in this.platformList) {
-      if (this.platformList[platform].name != from_platform) {
+      if (this.platformList[platform].name != from_platform.name) {
         toPlatformList[platform] = this.platformList[platform];
         //toPlatformList[platform].searchLink = this.createLink(platform, link);
       }
