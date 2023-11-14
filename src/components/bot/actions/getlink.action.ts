@@ -1,10 +1,13 @@
 import { Telegraf } from 'telegraf';
-import { ICtxUpd } from '../bot.context';
+import { ICtxUpd } from '../bot.context.js';
+import { CommonForActions } from './common.js';
+import { NotFoundError } from '../../api/api.service.errors.js';
 
 export class GetLinkAction {
   constructor(
     private readonly bot: Telegraf<ICtxUpd>,
     private readonly qSession: any,
+    private readonly common: CommonForActions,
   ) {}
 
   register() {
@@ -30,10 +33,19 @@ export class GetLinkAction {
           keyData.to_platform,
         );
       } catch (error) {
-        ctx.reply(ctx.i18n.t('cannot_find_link'));
+        if (error instanceof NotFoundError) {
+          console.log('GET LINK ERROR', error);
+          await this.common.showNotFoundError(ctx, keyData.to_platform, error);
+        }
         return;
       }
-      await ctx.reply(to_link as string);
+
+      if (to_link) {
+        await this.common.showLink(ctx, to_link);
+      } else {
+        console.log('Empty link!!!');
+        ctx.reply(ctx.i18n.t('cannot_find_link'));
+      }
     });
   }
 }

@@ -7,6 +7,8 @@
   "choose_platform": "Choose streaming platform:",
   "platform_not_found": "Unsupported link",
   "wrong_madia_type": "Unsupported media type",
-  "cannot_find_link": "Cannot find track on this platform 😒"
+  "cannot_find_track": "Cannot find track",
+  "on": "on",
+  "search_on_streaming": "check here"
 
 }

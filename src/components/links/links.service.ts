@@ -33,25 +33,25 @@ export class LinkService {
       name: 'spotify',
       title: 'Spotify',
       trackLink: 'https://open.spotify.com/track/',
-      searchLink: '',
+      searchLink: 'https://open.spotify.com/search/',
     },
     YandexMusic: {
       name: 'yandex-music',
       title: 'Yandex Music',
       trackLink: 'https://music.yandex.ru/track/',
-      searchLink: '',
+      searchLink: 'https://music.yandex.ru/search?text=',
     },
     YoutubeMusic: {
       name: 'youtube-music',
       title: 'YouTube Music',
       trackLink: 'https://music.youtube.com/watch?v=',
-      searchLink: '',
+      searchLink: 'https://music.youtube.com/search?q=',
     },
     AppleMusic: {
       name: 'apple-music',
       title: 'Apple Music',
       trackLink: 'https://music.apple.com/...',
-      searchLink: '',
+      searchLink: 'https://music.apple.com/us/search?term=',
     },
   };
 
@@ -82,6 +82,20 @@ export class LinkService {
       method: 'header',
     },
   };
+
+  getPlatformInfo(
+    platform_name: string,
+  ): PlatformListType[keyof PlatformListType] | null {
+    for (const key in this.platformList) {
+      if (this.platformList.hasOwnProperty(key)) {
+        const platformInfo = this.platformList[key];
+        if (platformInfo.name === platform_name) {
+          return platformInfo;
+        }
+      }
+    }
+    return null;
+  }
 
   detectSourcePlatform(
     link: string,

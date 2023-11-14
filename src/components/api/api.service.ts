@@ -22,15 +22,9 @@ class ApiService implements IApiService {
   async getLink(link: string, to_platform: string): Promise<string> {
     logger.error('Going to get link from API');
     const encodedUrl = encodeURIComponent(link);
-    let response;
-
-    try {
-      response = await this.http.get<JwtToken>(
-        '/get_link?link=' + encodedUrl + '&to_platform=' + to_platform,
-      );
-    } catch (error) {
-      throw handleApiErrors(error);
-    }
+    const response = await this.http.get<JwtToken>(
+      '/get_link?link=' + encodedUrl + '&to_platform=' + to_platform,
+    );
 
     if (!response) {
       throw new Error('Failed to get link from API');
@@ -46,20 +40,14 @@ class ApiService implements IApiService {
     const artist = encodeURIComponent(track.artist);
     const title = encodeURIComponent(track.title);
 
-    let response;
-
-    try {
-      response = await this.http.get<JwtToken>(
-        '/search_track?artist=' +
-          artist +
-          '&title=' +
-          title +
-          '&to_platform=' +
-          to_platform,
-      );
-    } catch (error) {
-      throw handleApiErrors(error);
-    }
+    const response = await this.http.get<JwtToken>(
+      '/search_track?artist=' +
+        artist +
+        '&title=' +
+        title +
+        '&to_platform=' +
+        to_platform,
+    );
 
     if (!response) {
       throw new Error('Failed to get link from API');

@@ -21,6 +21,7 @@ import { StartAction } from './actions/start.action.js';
 import { MessageAction } from './actions/message.action.js';
 import { GetLinkAction } from './actions/getlink.action.js';
 import { GetTrackAction } from './actions/gettrack.action.js';
+import { CommonForActions } from './actions/common.js';
 
 @injectable()
 class Bot implements IBot {
@@ -86,14 +87,17 @@ class Bot implements IBot {
     // Actions
     new StartAction(this.bot).register();
 
+    const commonForActions = new CommonForActions(
+      this.bot.context.linkService!,
+    );
     // bot.on('message')
     new MessageAction(this.bot, this.qSession).register();
 
     // action(/get_link\|(.+)/) - get link by link
-    new GetLinkAction(this.bot, this.qSession).register();
+    new GetLinkAction(this.bot, this.qSession, commonForActions).register();
 
     // action(/get_track\|(.+)/) - get linkk by artist + song title
-    new GetTrackAction(this.bot, this.qSession).register();
+    new GetTrackAction(this.bot, this.qSession, commonForActions).register();
 
     // Error handling
     this.bot.catch(async (error: any, ctx: ICtxUpd) => {
