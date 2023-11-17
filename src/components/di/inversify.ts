@@ -18,6 +18,7 @@ import { HttpService } from '../api/api.http.service.js';
 import { IApiService } from '../api/api.service.interface.js';
 import { ApiService } from '../api/api.service.js';
 import { StatisticsService } from '../statistics/statistics.serivce.js';
+import { CommonForActions } from '../bot/actions/common.js';
 
 const container = new Container();
 
@@ -30,7 +31,7 @@ container.bind<LinkService>(TYPES.LinkService).to(LinkService);
 
 container.bind<IApiService>(TYPES.ApiService).to(ApiService);
 container.bind<IHttpService>(TYPES.HttpService).to(HttpService);
-
+container.bind<CommonForActions>(TYPES.CommonForActions).to(CommonForActions);
 container
   .bind<StatisticsService>(TYPES.StatisticsService)
   .to(StatisticsService);

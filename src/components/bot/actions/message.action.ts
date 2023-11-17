@@ -1,5 +1,6 @@
 import { Markup, Telegraf } from 'telegraf';
-import { ICtxUpd } from '../bot.context';
+import { ICtxUpd } from '../bot.context.js';
+import { ClickData } from './common.js';
 
 export class MessageAction {
   constructor(
@@ -7,10 +8,20 @@ export class MessageAction {
     private readonly qSession: any,
   ) {}
 
+  private createKey(): string {
+    return Math.random().toString(36).substring(5, 10) as string;
+  }
+
   register() {
     // Send message with link or song name
     this.bot.on('message', async (ctx: ICtxUpd) => {
       if (!('text' in ctx.message!)) throw Error('Empty message');
+
+      if (!this.qSession[ctx.botUser.id]) {
+        const data: { [key: string]: ClickData } = {};
+        this.qSession[ctx.botUser.id] = data;
+      }
+      const buttons = [];
 
       // --------------------------------------------------------
       // Converted platforms
@@ -43,20 +54,13 @@ export class MessageAction {
           throw error;
         }
 
-        //console.log('Platforms: ', platformList);
-
-        const buttons = [];
-        if (!this.qSession[ctx.botUser.id]) {
-          this.qSession[ctx.botUser.id] = {};
-        }
-
         for (const platform in platformList) {
-          const key = Math.random().toString(36).substring(6, 10);
+          const key = this.createKey();
 
           this.qSession[ctx.botUser.id][key] = {
             to_platform: platformList[platform].name,
             link: messageLink,
-          };
+          } as ClickData;
 
           buttons.push([
             Markup.button.callback(
@@ -77,21 +81,18 @@ export class MessageAction {
 
       if (trackInfo) {
         const platformList = ctx.linkService.getPlatformListAll();
-        const buttons = [];
-        if (!this.qSession[ctx.botUser.id]) {
-          this.qSession[ctx.botUser.id] = {};
-        }
 
         for (const platform in platformList) {
-          const key = Math.random().toString(36).substring(6, 10);
+          const key = this.createKey();
 
           this.qSession[ctx.botUser.id][key] = {
             to_platform: platformList[platform].name,
+            link: '',
             track: {
               artist: trackInfo.artist,
               title: trackInfo.title,
             },
-          };
+          } as ClickData;
 
           buttons.push([
             Markup.button.callback(

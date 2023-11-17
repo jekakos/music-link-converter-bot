@@ -2,40 +2,39 @@ import { Telegraf } from 'telegraf';
 import { ICtxUpd } from '../bot.context.js';
 import { CommonForActions } from './common.js';
 import { NotFoundError } from '../../api/api.service.errors.js';
+import { StatisticsService } from '../../statistics/statistics.serivce.js';
 
 export class GetTrackAction {
   constructor(
     private readonly bot: Telegraf<ICtxUpd>,
     private readonly qSession: any,
     private readonly common: CommonForActions,
+    private readonly statistics: StatisticsService,
   ) {}
 
   register() {
     this.bot.action(/get_track\|(.+)/, async (ctx: ICtxUpd) => {
-      let key;
-      let keyData;
+      const clickData = this.common.getClickButtonData(ctx, this.qSession);
 
-      if ('match' in ctx) {
-        [, key] = ctx.match as RegExpExecArray;
-        keyData = this.qSession[ctx.botUser.id][key] ?? null;
-      } else {
-        throw Error('Wrong command 1');
-      }
+      if (!clickData) throw Error('Wrong command');
+      this.statistics.logAction(ctx, clickData);
 
-      if (!keyData) throw Error('Wrong command 2');
-
-      console.log('Track = ', keyData.track);
+      if (!clickData.track) throw Error('Wrong track info');
 
       let to_link;
       try {
         to_link = await ctx.apiService.getLinkByTrack(
-          keyData.track,
-          keyData.to_platform,
+          clickData.track,
+          clickData.to_platform,
         );
       } catch (error) {
         if (error instanceof NotFoundError) {
           console.log('GET TRACK ERROR', error);
-          await this.common.showNotFoundError(ctx, keyData.to_platform, error);
+          await this.common.showNotFoundError(
+            ctx,
+            clickData.to_platform,
+            error,
+          );
         }
         return;
       }

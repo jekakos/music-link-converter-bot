@@ -44,14 +44,16 @@ class Bot implements IBot {
   ) {
     this.config = config;
     this.session = sessionService;
+    this.qSession = {};
+    this.userService = userService;
+    this.statistics = statistics;
+
     this.bot = new Telegraf<ICtxUpd>(config.get('TOKEN'));
     this.bot.context.sessionService = sessionService;
     this.bot.context.apiService = apiService;
     this.bot.context.linkService = linkService;
     this.bot.context.configService = config;
-    this.userService = userService;
-    this.qSession = {};
-    this.statistics = statistics;
+    this.bot.context.qSession = this.qSession;
   }
 
   async init() {
@@ -66,6 +68,7 @@ class Bot implements IBot {
 
     this.bot.use(this.handleUpdate.bind(this));
 
+    // Statistics
     this.bot.use(this.statistics.createMiddleware());
 
     const sceneList = await getSceneList();
@@ -94,10 +97,20 @@ class Bot implements IBot {
     new MessageAction(this.bot, this.qSession).register();
 
     // action(/get_link\|(.+)/) - get link by link
-    new GetLinkAction(this.bot, this.qSession, commonForActions).register();
+    new GetLinkAction(
+      this.bot,
+      this.qSession,
+      commonForActions,
+      this.statistics,
+    ).register();
 
     // action(/get_track\|(.+)/) - get linkk by artist + song title
-    new GetTrackAction(this.bot, this.qSession, commonForActions).register();
+    new GetTrackAction(
+      this.bot,
+      this.qSession,
+      commonForActions,
+      this.statistics,
+    ).register();
 
     // Error handling
     this.bot.catch(async (error: any, ctx: ICtxUpd) => {

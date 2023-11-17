@@ -1,9 +1,24 @@
+import { inject, injectable } from 'inversify';
 import { NotFoundError } from '../../api/api.service.errors.js';
 import { LinkService } from '../../links/links.service.js';
 import { ICtxUpd } from '../bot.context.js';
+import { TYPES } from '../../di/inversify.types.js';
 
+export class ClickData {
+  to_platform: string;
+  link: string;
+  track?: {
+    artist: string;
+    title: string;
+  };
+}
+
+@injectable()
 export class CommonForActions {
-  constructor(private readonly linkService: LinkService) {}
+  private linkService: LinkService;
+  constructor(@inject(TYPES.LinkService) linkService: LinkService) {
+    this.linkService = linkService;
+  }
 
   async showLink(ctx: ICtxUpd, to_link: string) {
     const handleBot = ctx.configService.get('BOT_HANDLE');
@@ -62,5 +77,14 @@ export class CommonForActions {
     } else {
       ctx.replyWithHTML(this.trackNotFound(ctx, to_platform));
     }
+  }
+
+  getClickButtonData(ctx: ICtxUpd, session: any): ClickData | null {
+    let key;
+    if ('match' in ctx) {
+      [, key] = ctx.match as RegExpExecArray;
+      return session[ctx.botUser.id][key] ?? null;
+    }
+    return null;
   }
 }

@@ -11,6 +11,7 @@ const TYPES = {
   TestNavigationService: Symbol.for('TestNavigationService'),
   LinkService: Symbol.for('LinkService'),
   StatisticsService: Symbol.for('StatisticsService'),
+  CommonForActions: Symbol.for('CommonForActions'),
 };
 
 export { TYPES };

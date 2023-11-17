@@ -19,6 +19,7 @@ interface ICtxUpd extends Context {
   configService: IConfigService;
   linkService: LinkService;
   apiService: IApiService;
+  qSession: any;
 
   webhookReply: boolean;
   i18n: I18n;
