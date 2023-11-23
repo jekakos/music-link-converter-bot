@@ -15,8 +15,8 @@ class NotFoundError extends Error {
     this.name = 'NotFoundError';
     this.statusCode = data.statusCode || 404;
     this.platform = data.platform || 'Unknown platform';
-    this.artist = data.artist || 'Unknown artist';
-    this.title = data.title || 'Unknown title';
+    this.artist = data.artist || null;
+    this.title = data.title || null;
   }
 }
 class DataUpdateError extends Error {

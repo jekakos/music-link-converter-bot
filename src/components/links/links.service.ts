@@ -76,7 +76,7 @@ export class LinkService {
       title: 'Apple Music',
       method: 'api',
     },
-    YoutobeVideo: {
+    YoutubeVideo: {
       name: 'youtube-video',
       title: 'YouTube Video',
       method: 'header',
@@ -107,7 +107,7 @@ export class LinkService {
       return this.platformSourceList.YoutubeMusic;
     if (link.includes('music.apple.com'))
       return this.platformSourceList.AppleMusic;
-    if (link.includes('youtu.be')) return this.platformSourceList.YoutobeVideo;
+    if (link.includes('youtu.be')) return this.platformSourceList.YoutubeVideo;
 
     return null;
   }

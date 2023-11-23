@@ -38,21 +38,24 @@ export class CommonForActions {
     const platform_info = this.linkService.getPlatformInfo(to_platform);
     console.log('Platform INFO: ', platform_info);
 
-    if (platform_info && title && artist) {
-      const message =
+    if (platform_info) {
+      let message =
         ctx.i18n.t('cannot_find_track') +
         ' ' +
         ctx.i18n.t('on') +
         ' ' +
-        platform_info.title +
-        ', ' +
-        ctx.i18n.t('search_on_streaming');
-      const searchTerm = encodeURIComponent(`${title} - ${artist}`);
-      const search_link = `&#128270 <a href="${
-        platform_info.searchLink + searchTerm
-      }">${title} - ${artist}</a>`;
+        platform_info.title;
 
-      return message + ' ' + search_link;
+      if (title && artist) {
+        message += ', ' + ctx.i18n.t('search_on_streaming');
+        const searchTerm = encodeURIComponent(`${title} - ${artist}`);
+        const search_link = `&#128270 <a href="${
+          platform_info.searchLink + searchTerm
+        }">${title} - ${artist}</a>`;
+
+        message += ' ' + search_link;
+      }
+      return message;
     }
     return ctx.i18n.t('cannot_find_track');
   }
