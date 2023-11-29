@@ -42,7 +42,7 @@ export class CommonForActions {
       let message =
         ctx.i18n.t('cannot_find_track') +
         ' ' +
-        ctx.i18n.t('on') +
+        ctx.i18n.t('in') +
         ' ' +
         platform_info.title;
 
